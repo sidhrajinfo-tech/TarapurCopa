@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+
+  <style>
+   
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ===== MAIN CONTAINER ===== */
+
+.quiz-box {
+  background: white;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 15px;
+}
+
+/* ===== STICKY HEADER ===== */
+
+#timer {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 18px;
+  color: #e63946;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  z-index: 10;
+}
+
+/* ===== NAME INPUT ===== */
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0 15px 0;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  border-color: #457b9d;
+}
+
+/* ===== QUESTION CARD ===== */
+
+.question {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: 0.2s;
+}
+
+.question:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.question p {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+/* ===== OPTIONS ===== */
+
+label {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+  border: 1px solid transparent;
+}
+
+label:hover {
+  background: #edf6f9;
+  border-color: #dceef5;
+}
+
+input[type="radio"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+/* ===== BUTTON ===== */
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #1d3557;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #16324f;
+}
+
+/* ===== RESULT TEXT ===== */
+
+#result {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #2a9d8f;
+}
+
+/* ===== MOBILE TUNING ===== */
+
+@media (max-width: 600px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .quiz-box {
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  #timer {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .question p {
+    font-size: 14px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 15px;
+  }
+}
+  </style>
+</head>
+<body>
+
+<div class="quiz-box">
+  <h2>Copa Test</h2>
+
+  <!-- ✅ NAME INPUT -->
+  <input type="text" id="username" placeholder="Enter your Full name">
+
+  <div id="timer">Time: 15 Minutes </div>
+  <form id="quizForm"></form>
+  <button id="submitBtn">Submit Test</button>
+  <div id="result"></div>
+</div>
+
+<!-- ✅ XML QUESTIONS (Editable) -->
+<script id="quizData" type="text/xml">
+<quiz>
+
+  <question>
+    <text>Which device is considered the brain of computer?</text>
+    <option correct="false">RAM</option>
+    <option correct="true">CPU</option>
+    <option correct="false">Hard Disk</option>
+    <option correct="false">Monitor</option>
+  </question>
+
+  <question>
+    <text>Which memory is volatile?</text>
+    <option correct="true">RAM</option>
+    <option correct="false">ROM</option>
+    <option correct="false">Hard Disk</option>
+    <option correct="false">DVD</option>
+  </question>
+
+  <question>
+    <text>Full form of URL?</text>
+    <option correct="true">Uniform Resource Locator</option>
+    <option correct="false">Universal Reference Link</option>
+    <option correct="false">Unified Resource Link</option>
+    <option correct="false">Uniform Read Locator</option>
+  </question>
+
+  <question>
+    <text>Which software is used for word processing?</text>
+    <option correct="true">MS Word</option>
+    <option correct="false">MS Excel</option>
+    <option correct="false">PowerPoint</option>
+    <option correct="false">Paint</option>
+  </question>
+
+  <question>
+    <text>Shortcut key for copy?</text>
+    <option correct="false">Ctrl + V</option>
+    <option correct="true">Ctrl + C</option>
+    <option correct="false">Ctrl + X</option>
+    <option correct="false">Ctrl + Z</option>
+  </question>
+
+  <question>
+    <text>Which extension belongs to MS Word file?</text>
+    <option correct="false">.xls</option>
+    <option correct="true">.docx</option>
+    <option correct="false">.ppt</option>
+    <option correct="false">.html</option>
+  </question>
+
+  <question>
+    <text>Which feature corrects spelling automatically?</text>
+    <option correct="false">Mail Merge</option>
+    <option correct="true">AutoCorrect</option>
+    <option correct="false">Track Changes</option>
+    <option correct="false">Word Count</option>
+  </question>
+
+  <question>
+    <text>Which option aligns text equally on both sides?</text>
+    <option correct="false">Left Align</option>
+    <option correct="false">Right Align</option>
+    <option correct="true">Justify</option>
+    <option correct="false">Center</option>
+  </question>
+
+  <question>
+    <text>Which Excel symbol starts a formula?</text>
+    <option correct="false">@</option>
+    <option correct="false">#</option>
+    <option correct="true">=</option>
+    <option correct="false">&amp;</option>
+  </question>
+
+  <question>
+    <text>Which function calculates average in Excel?</text>
+    <option correct="false">SUM()</option>
+    <option correct="true">AVERAGE()</option>
+    <option correct="false">COUNT()</option>
+    <option correct="false">MAX()</option>
+  </question>
+
+  <question>
+    <text>Intersection of row and column is called?</text>
+    <option correct="true">Cell</option>
+    <option correct="false">Table</option>
+    <option correct="false">Box</option>
+    <option correct="false">Field</option>
+  </question>
+
+  <question>
+    <text>Which chart shows proportions?</text>
+    <option correct="false">Bar Chart</option>
+    <option correct="true">Pie Chart</option>
+    <option correct="false">Line Chart</option>
+    <option correct="false">Scatter Plot</option>
+  </question>
+
+  <question>
+    <text>Which key edits active cell in Excel?</text>
+    <option correct="true">F2</option>
+    <option correct="false">F5</option>
+    <option correct="false">F1</option>
+    <option correct="false">F12</option>
+  </question>
+
+  <question>
+    <text>Which PowerPoint view used for slide designing?</text>
+    <option correct="true">Normal View</option>
+    <option correct="false">Slide Sorter</option>
+    <option correct="false">Reading View</option>
+    <option correct="false">Notes View</option>
+  </question>
+
+  <question>
+    <text>Which feature adds animation to objects?</text>
+    <option correct="false">Transition</option>
+    <option correct="true">Custom Animation</option>
+    <option correct="false">Slide Show</option>
+    <option correct="false">Layout</option>
+  </question>
+
+  <question>
+    <text>Which option changes slide appearance?</text>
+    <option correct="true">Theme</option>
+    <option correct="false">Header</option>
+    <option correct="false">Footer</option>
+    <option correct="false">Notes</option>
+  </question>
+
+  <question>
+    <text>Which shortcut starts slideshow?</text>
+    <option correct="false">Ctrl + S</option>
+    <option correct="true">F5</option>
+    <option correct="false">F1</option>
+    <option correct="false">Esc</option>
+  </question>
+
+  <question>
+    <text>HTML stands for?</text>
+    <option correct="true">HyperText Markup Language</option>
+    <option correct="false">HighText Machine Language</option>
+    <option correct="false">Hyper Tool Multi Language</option>
+    <option correct="false">None</option>
+  </question>
+
+  <question>
+    <text>Which tag creates hyperlink?</text>
+    <option correct="true">&lt;a&gt;</option>
+    <option correct="false">&lt;link&gt;</option>
+    <option correct="false">&lt;href&gt;</option>
+    <option correct="false">&lt;url&gt;</option>
+  </question>
+
+  <question>
+    <text>Which tag inserts image?</text>
+    <option correct="true">&lt;img&gt;</option>
+    <option correct="false">&lt;image&gt;</option>
+    <option correct="false">&lt;src&gt;</option>
+    <option correct="false">&lt;pic&gt;</option>
+  </question>
+
+  <question>
+    <text>Correct HTML structure starts with?</text>
+    <option correct="true">&lt;html&gt;</option>
+    <option correct="false">&lt;head&gt;</option>
+    <option correct="false">&lt;body&gt;</option>
+    <option correct="false">&lt;title&gt;</option>
+  </question>
+
+  <question>
+    <text>Which tag defines paragraph?</text>
+    <option correct="true">&lt;p&gt;</option>
+    <option correct="false">&lt;para&gt;</option>
+    <option correct="false">&lt;text&gt;</option>
+    <option correct="false">&lt;pg&gt;</option>
+  </question>
+
+  <question>
+    <text>Which attribute specifies link destination?</text>
+    <option correct="true">href</option>
+    <option correct="false">src</option>
+    <option correct="false">link</option>
+    <option correct="false">ref</option>
+  </question>
+
+  <question>
+    <text>Which tag creates line break?</text>
+    <option correct="true">&lt;br&gt;</option>
+    <option correct="false">&lt;lb&gt;</option>
+    <option correct="false">&lt;break&gt;</option>
+    <option correct="false">&lt;hr&gt;</option>
+  </question>
+
+  <question>
+    <text>Which Excel function counts numeric cells?</text>
+    <option correct="true">COUNT()</option>
+    <option correct="false">COUNTA()</option>
+    <option correct="false">SUM()</option>
+    <option correct="false">TOTAL()</option>
+  </question>
+
+  <question>
+    <text>Which option freezes rows/columns?</text>
+    <option correct="true">Freeze Panes</option>
+    <option correct="false">Lock Cells</option>
+    <option correct="false">Split View</option>
+    <option correct="false">Hide</option>
+  </question>
+
+  <question>
+    <text>Which PowerPoint effect moves between slides?</text>
+    <option correct="true">Transition</option>
+    <option correct="false">Animation</option>
+    <option correct="false">Layout</option>
+    <option correct="false">Design</option>
+  </question>
+
+  <question>
+    <text>Which storage device is permanent?</text>
+    <option correct="false">RAM</option>
+    <option correct="true">Hard Disk</option>
+    <option correct="false">Cache</option>
+    <option correct="false">Register</option>
+  </question>
+
+  <question>
+    <text>Which shortcut saves file?</text>
+    <option correct="true">Ctrl + S</option>
+    <option correct="false">Ctrl + P</option>
+    <option correct="false">Ctrl + A</option>
+    <option correct="false">Ctrl + D</option>
+  </question>
+</quiz>
+</script>
+
+<script>
+/* ================= CONFIG ================= */
+
+const QUIZ_TIME_SECONDS = 900; // ⏱ Change timer here
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdMp_3SIPVI5L5kIJAsbkp3T9LdG1JkzIdOKO6WET1RBX2EJI3L4or2VVkXWX0wLF/exec"; 
+// 🔗 Paste Apps Script Web App URL here
+
+/* ========================================== */
+
+let questions = [];
+let timeLeft = QUIZ_TIME_SECONDS;
+let timerInterval;
+
+function loadQuizFromXML() {
+  const xmlText = document.getElementById("quizData").textContent;
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, "text/xml");
+
+  const qNodes = xml.querySelectorAll("question");
+  const form = document.getElementById("quizForm");
+
+  qNodes.forEach((qNode, index) => {
+    const text = qNode.querySelector("text").textContent;
+    const options = qNode.querySelectorAll("option");
+
+    const qObj = { text: text, options: [] };
+
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML += `<p>${index + 1}. ${text}</p>`;
+
+    options.forEach((optNode, i) => {
+      const optText = optNode.textContent;
+      const isCorrect = optNode.getAttribute("correct") === "true";
+
+      qObj.options.push({ text: optText, correct: isCorrect });
+
+      div.innerHTML += `
+        <label>
+          <input type="radio" name="q${index}" value="${i}">
+          ${optText}
+        </label><br>
+      `;
+    });
+
+    questions.push(qObj);
+    form.appendChild(div);
+  });
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+
+    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    const seconds = String(timeLeft % 60).padStart(2, '0');
+
+    document.getElementById("timer").textContent =
+      `Time: ${minutes}:${seconds}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+function calculateScore() {
+  let score = 0;
+
+  questions.forEach((q, index) => {
+    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+    if (!selected) return;
+
+    if (q.options[selected.value].correct) score++;
+  });
+
+  return score;
+}
+
+async function sendToGoogleSheet(name, score) {
+  if (!GOOGLE_SCRIPT_URL.includes("http")) return;
+
+  const payload = { name: name, score: score };
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.log("Sheet Error:", err);
+  }
+}
+
+async function submitQuiz(auto = false) {
+  const name = document.getElementById("username").value.trim();
+
+  if (!name) {
+    alert("Please enter your name");
+    return;
+  }
+
+  clearInterval(timerInterval);
+
+  const score = calculateScore();
+
+  document.getElementById("result").textContent =
+    `Name: ${name} | Score: ${score}`;
+
+  await sendToGoogleSheet(name, score);
+
+  if (auto) alert("Time Up! Quiz Auto Submitted.");
+}
+
+document.getElementById("submitBtn")
+  .addEventListener("click", () => submitQuiz());
+
+loadQuizFromXML();
+startTimer();
+</script>
+
+</body>
+</html>
+
+
+
+
