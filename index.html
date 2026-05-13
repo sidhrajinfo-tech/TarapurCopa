@@ -1,562 +1,731 @@
 <!DOCTYPE html>
-<html>
+<html lang="gu">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz App</title>
+  <title>Premium Quiz Experience</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-   
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    :root {
+      --primary: #6366f1;
+      --primary-light: #eef2ff;
+      --bg: #f8fafc;
+      --card-white: #ffffff;
+      --text-dark: #0f172a;
+      --text-gray: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+    }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  background: #f0f2f5;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ===== MAIN CONTAINER ===== */
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
 
-.quiz-box {
-  background: white;
-  width: 100%;
-  max-width: 520px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 15px;
-}
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 50px;
+    }
 
-/* ===== STICKY HEADER ===== */
+    /* Header Design */
+    .quiz-header {
+      background: var(--card-white);
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      text-align: center;
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      border: 1px solid var(--border);
+    }
 
-#timer {
-  position: sticky;
-  top: 0;
-  background: white;
-  padding: 12px;
-  font-weight: bold;
-  font-size: 18px;
-  color: #e63946;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  z-index: 10;
-}
+    h2 { font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); }
+    
+    #timer {
+      font-weight: 700;
+      color: #ef4444;
+      background: #fef2f2;
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+    }
 
-/* ===== NAME INPUT ===== */
+    /* Name Input */
+    .user-info { margin-bottom: 24px; }
+    input[type="text"] {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      font-size: 1rem;
+      transition: 0.3s;
+      outline: none;
+      background: white;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
 
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0 15px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  outline: none;
-}
+    /* Question Card */
+    .question-card {
+      background: var(--card-white);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
 
-input[type="text"]:focus {
-  border-color: #457b9d;
-}
+    .question-text {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
 
-/* ===== QUESTION CARD ===== */
+    /* Custom Option Cards (No more radio dots!) */
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.question {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
-  transition: 0.2s;
-}
+    .option-label {
+      position: relative;
+      cursor: pointer;
+      display: block;
+    }
 
-.question:hover {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+    .option-label input {
+      position: absolute;
+      opacity: 0; /* Hide default radio */
+    }
 
-.question p {
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-size: 15px;
-}
+    .option-content {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
 
-/* ===== OPTIONS ===== */
+    .option-label:hover .option-content {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
 
-label {
-  display: block;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: 0.15s;
-  border: 1px solid transparent;
-}
+    /* Active/Selected State */
+    .option-label input:checked + .option-content {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      transform: scale(1.02);
+      box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+    }
 
-label:hover {
-  background: #edf6f9;
-  border-color: #dceef5;
-}
+    /* Submit Button */
+    .btn-container {
+      margin-top: 30px;
+    }
 
-input[type="radio"] {
-  margin-right: 8px;
-  transform: scale(1.1);
-}
+    button {
+      width: 100%;
+      padding: 20px;
+      border-radius: 18px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      transition: 0.3s;
+    }
 
-/* ===== BUTTON ===== */
+    button:hover:not(:disabled) {
+      background: #4f46e5;
+      transform: translateY(-2px);
+    }
 
-button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #1d3557;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
 
-button:hover {
-  background: #16324f;
-}
+    /* Spinner */
+    .loader {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
 
-/* ===== RESULT TEXT ===== */
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-#result {
-  margin-top: 15px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 16px;
-  color: #2a9d8f;
-}
+    #result {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: 700;
+      color: var(--success);
+    }
 
-/* ===== MOBILE TUNING ===== */
-
-@media (max-width: 600px) {
-
-  body {
-    padding: 10px;
-  }
-
-  .quiz-box {
-    border-radius: 10px;
-    padding: 10px;
-  }
-
-  #timer {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .question p {
-    font-size: 14px;
-  }
-
-  label {
-    font-size: 14px;
-  }
-
-  button {
-    font-size: 15px;
-  }
-}
+    @media (max-width: 500px) {
+      body { padding: 10px; }
+      .quiz-header { border-radius: 16px; padding: 16px; }
+      .question-card { padding: 20px; }
+    }
   </style>
 </head>
 <body>
 
-<div class="quiz-box">
-  <h2>Copa Test</h2>
+<div class="container">
+  <div class="quiz-header">
+    <h2>Copa Pro Test</h2>
+    <div id="timer">Loading Timer...</div>
+  </div>
 
-  <!-- ✅ NAME INPUT -->
-  <input type="text" id="username" placeholder="Enter your Full name">
+  <div class="user-info">
+    <input type="text" id="username" placeholder="તમારું આખું નામ લખો (Full Name)">
+  </div>
 
-  <div id="timer">Time: 15 Minutes </div>
   <form id="quizForm"></form>
-  <button id="submitBtn">Submit Test</button>
-  <div id="result"></div>
+
+  <div class="btn-container">
+    <button id="submitBtn">
+      <div class="loader" id="loader"></div>
+      <span id="btnText">Submit Test</span>
+    </button>
+    <div id="result"></div>
+  </div>
 </div>
 
-<!-- ✅ XML QUESTIONS (Editable) -->
 <script id="quizData" type="text/xml">
 <quiz>
+  <question>
+    <text>Which type of attack tries a large number of possibilities to defeat a cryptographic scheme? / કયા પ્રકારનો હુમલો મોટી સંખ્યામાં શક્યતાઓને અજમાવવાની પદ્ધતિ છે?</text>
+    <option correct="false">Phishing</option>
+    <option correct="true">Brute Force Attack</option>
+    <option correct="false">Dos Attack</option>
+    <option correct="false">Spam</option>
+  </question>
 
   <question>
-    <text>Which device is considered the brain of computer?</text>
-    <option correct="false">RAM</option>
-    <option correct="true">CPU</option>
-    <option correct="false">Hard Disk</option>
+    <text>What tries to steal, spy, or damage computer systems and information? / જે ચોરી, જાસૂસી કે કમ્પ્યુટર સિસ્ટમને નુકસાન પહોંચાડવાનો પ્રયાસ કરે છે તેને શું કહેવાય?</text>
+    <option correct="false">Update</option>
+    <option correct="true">Cyber Attack</option>
+    <option correct="false">Firewall</option>
+    <option correct="false">Antivirus</option>
+  </question>
+
+  <question>
+    <text>What is the full form of IP? / IP નું પૂરું નામ શું છે?</text>
+    <option correct="true">Internet Protocol</option>
+    <option correct="false">Internal Protocol</option>
+    <option correct="false">Intranet Protocol</option>
+    <option correct="false">Instant Protocol</option>
+  </question>
+
+  <question>
+    <text>What is the full form of SQL? / SQL નું પૂરું નામ શું છે?</text>
+    <option correct="false">Simple Query Language</option>
+    <option correct="false">Standard Query Language</option>
+    <option correct="true">Structured Query Language</option>
+    <option correct="false">System Query Logic</option>
+  </question>
+
+  <question>
+    <text>What is BIOS? / BIOS એ શું છે?</text>
+    <option correct="false">Hardware</option>
+    <option correct="true">Firmware</option>
+    <option correct="false">Software</option>
+    <option correct="false">Middleware</option>
+  </question>
+
+  <question>
+    <text>Which language is mainly used for client-side scripting in web pages? / વેબ પેજમાં ક્લાયન્ટ-સાઇડ સ્ક્રિપ્ટીંગ માટે મુખ્યત્વે કઈ ભાષા વપરાય છે?</text>
+    <option correct="false">HTML</option>
+    <option correct="false">Java</option>
+    <option correct="true">JavaScript</option>
+    <option correct="false">PHP</option>
+  </question>
+
+  <question>
+    <text>Twisted pair, Coaxial cable, and Optical fiber are examples of: / ટ્વિસ્ટેડ જોડી વાયર, કોએક્સિયલ કેબલ અને ઓપ્ટિકલ ફાઈબર શેના ઉદાહરણ છે?</text>
+    <option correct="false">Wireless Media</option>
+    <option correct="false">Storage Media</option>
+    <option correct="false">Software</option>
+    <option correct="true">Wired Media</option>
+  </question>
+
+  <question>
+    <text>What protects data from online attacks and malware? / ડેટાને ઓનલાઇન હુમલાઓ અને માલવેરથી કોણ સુરક્ષિત કરે છે?</text>
+    <option correct="false">Cryptography</option>
+    <option correct="false">Firewall</option>
+    <option correct="true">Cyber Security</option>
+    <option correct="false">Database</option>
+  </question>
+
+  <question>
+    <text>What is the full form of DDL? / DDL નું પૂરું નામ શું છે?</text>
+    <option correct="false">Data Design Language</option>
+    <option correct="true">Data Definition Language</option>
+    <option correct="false">Digital Definition Logic</option>
+    <option correct="false">Data Direct Link</option>
+  </question>
+
+  <question>
+    <text>Which shortcut key refreshes the Windows desktop? / કઈ શોર્ટકટ કી વિન્ડોઝ ડેસ્કટોપને રિફ્રેશ (તાજું) કરે છે?</text>
+    <option correct="false">F2</option>
+    <option correct="false">F10</option>
+    <option correct="true">F5</option>
+    <option correct="false">F11</option>
+  </question>
+
+  <question>
+    <text>Which device is used for Modulation and Demodulation? / મોડ્યુલેશન અને ડીમોડ્યુલેશન માટે કયા ઉપકરણનો ઉપયોગ થાય છે?</text>
+    <option correct="false">Router</option>
+    <option correct="true">Modem</option>
+    <option correct="false">Switch</option>
+    <option correct="false">Hub</option>
+  </question>
+
+  <question>
+    <text>In MS Excel, a formula always starts with which symbol? / એક્સેલમાં ફોર્મ્યુલા હંમેશા કયા ચિહ્નથી શરૂ થાય છે?</text>
+    <option correct="false">+</option>
+    <option correct="false">$</option>
+    <option correct="true">=</option>
+    <option correct="false">#</option>
+  </question>
+
+  <question>
+    <text>What is the full form of CPU? / CPU નું પૂરું નામ શું છે?</text>
+    <option correct="true">Central Processing Unit</option>
+    <option correct="false">Computer Processing Unit</option>
+    <option correct="false">Control Program Unit</option>
+    <option correct="false">Central Program Unit</option>
+  </question>
+
+  <question>
+    <text>Which command removes files in Linux? / Linux માં કયો આદેશ ફાઈલોને દૂર (Delete) કરે છે?</text>
+    <option correct="true">rm</option>
+    <option correct="false">del</option>
+    <option correct="false">remove</option>
+    <option correct="false">erase</option>
+  </question>
+
+  <question>
+    <text>What is Debugging? / Debugging એટલે શું?</text>
+    <option correct="false">Writing code</option>
+    <option correct="true">Find and correction errors in program code</option>
+    <option correct="false">Running code</option>
+    <option correct="false">Deleting code</option>
+  </question>
+
+  <question>
+    <text>What is the full form of RAM? / RAM નું પૂરું નામ શું છે?</text>
+    <option correct="false">Read Access Memory</option>
+    <option correct="true">Random Access Memory</option>
+    <option correct="false">Run Access Memory</option>
+    <option correct="false">Real Access Memory</option>
+  </question>
+
+  <question>
+    <text>What is the base of the Binary number system? / બાઈનરી નંબર સિસ્ટમનો આધાર (Base) શું છે?</text>
+    <option correct="false">8</option>
+    <option correct="false">10</option>
+    <option correct="true">2</option>
+    <option correct="false">16</option>
+  </question>
+
+  <question>
+    <text>Which protocol is used for sending emails? / ઈમેલ મોકલવા માટે કયો પ્રોટોકોલ વપરાય છે?</text>
+    <option correct="false">FTP</option>
+    <option correct="false">HTTP</option>
+    <option correct="true">SMTP</option>
+    <option correct="false">IP</option>
+  </question>
+
+  <question>
+    <text>What is the full form of SMPS? / SMPS નું પૂરું નામ શું છે?</text>
+    <option correct="false">Simple Mode Power Supply</option>
+    <option correct="false">Storage Mode Power System</option>
+    <option correct="true">Switched Mode Power Supply</option>
+    <option correct="false">Single Mode Power Supply</option>
+  </question>
+
+  <question>
+    <text>Which shortcut keys are used to Copy and Paste files? / કઈ શોર્ટકટ કી કોપી અને પેસ્ટ કરવા માટે વપરાય છે?</text>
+    <option correct="false">Ctrl+X and Ctrl+V</option>
+    <option correct="true">Ctrl+C and Ctrl+V</option>
+    <option correct="false">Ctrl+Z and Ctrl+Y</option>
+    <option correct="false">Ctrl+A and Ctrl+S</option>
+  </question>
+
+  <question>
+    <text>What is the purpose of a Cover Page? / કવર પેજનો હેતુ શું છે?</text>
+    <option correct="true">Allows to fill Title, Author and Date</option>
+    <option correct="false">To delete text</option>
+    <option correct="false">To print documents</option>
+    <option correct="false">To save files</option>
+  </question>
+
+  <question>
+    <text>Which program code uses a given module? / કયો પ્રોગ્રામ કોડ આપેલ મોડ્યુલ નો ઉપયોગ કરે છે?</text>
+    <option correct="false">Server</option>
+    <option correct="true">Client</option>
+    <option correct="false">Compiler</option>
+    <option correct="false">Interpreter</option>
+  </question>
+
+  <question>
+    <text>What is the main purpose of JavaScript? / જાવાસ્ક્રિપ્ટનો મુખ્ય હેતુ શું છે?</text>
+    <option correct="true">Client Side Validation</option>
+    <option correct="false">Database Management</option>
+    <option correct="false">Operating System</option>
+    <option correct="false">Hardware Control</option>
+  </question>
+
+  <question>
+    <text>Which function key runs a PowerPoint presentation? / કઈ ફંક્શન કી પાવરપોઈન્ટ પ્રેઝન્ટેશન ચલાવે છે?</text>
+    <option correct="false">F1</option>
+    <option correct="false">F2</option>
+    <option correct="true">F5</option>
+    <option correct="false">F11</option>
+  </question>
+
+  <question>
+    <text>Which software interfaces computer hardware with the OS? / કયું સોફ્ટવેર હાર્ડવેર અને OS વચ્ચે ઇન્ટરફેસ કરે છે?</text>
+    <option correct="false">Firmware</option>
+    <option correct="true">BIOS</option>
+    <option correct="false">Driver</option>
+    <option correct="false">Utility</option>
+  </question>
+
+  <question>
+    <text>What is another name for a Web Address? / વેબ એડ્રેસનું બીજું નામ શું છે?</text>
+    <option correct="false">HTTP</option>
+    <option correct="true">URL</option>
+    <option correct="false">TCP</option>
+    <option correct="false">WWW</option>
+  </question>
+
+  <question>
+    <text>Which character represents the parent directory in Linux? / Linux માં કયું પાત્ર પિતૃ નિર્દેશિકા (Parent Directory) દર્શાવે છે?</text>
+    <option correct="false">/ (Slash)</option>
+    <option correct="false">~ (Tilde)</option>
+    <option correct="true">. . (Dot Dot)</option>
+    <option correct="false">. (Single Dot)</option>
+  </question>
+
+  <question>
+    <text>Which HTML tag creates a checkbox in a form? / HTML ફોર્મમાં ચેકબોક્સ બનાવવા માટે કયો ટેગ વપરાય છે?</text>
+    <option correct="false">input type="radio"</option>
+    <option correct="false">input type="text"</option>
+    <option correct="false">input type="password"</option>
+    <option correct="true">input type="checkbox"</option>
+  </question>
+
+  <question>
+    <text>Proxy server reduces the load of which server? / પ્રોક્સી સર્વર દ્વારા કયા સર્વરનો ભાર ઓછો થાય છે?</text>
+    <option correct="false">Local Server</option>
+    <option correct="true">Primary Server</option>
+    <option correct="false">Secondary Server</option>
+    <option correct="false">Web Server</option>
+  </question>
+
+  <question>
+    <text>What collectively refers to viruses, worms, and trojans? / વાયરસ, વોર્મ અને ટ્રોઝન માટે સામૂહિક શબ્દ કયો છે?</text>
+    <option correct="false">Software</option>
+    <option correct="false">Hardware</option>
+    <option correct="true">Malware</option>
+    <option correct="false">Spyware</option>
+  </question>
+
+  <question>
+    <text>In which year was the Python language developed? / પાયથોન ભાષાનો વિકાસ કઈ સાલમાં થયો હતો?</text>
+    <option correct="false">1985</option>
+    <option correct="true">1991</option>
+    <option correct="false">1995</option>
+    <option correct="false">2000</option>
+  </question>
+
+  <question>
+    <text>Which type of E-commerce is a Payment Gateway? / કયા પ્રકારનું ઈ-કોમર્સ પેમેન્ટ ગેટવે છે?</text>
+    <option correct="false">G2C</option>
+    <option correct="true">B2B</option>
+    <option correct="false">C2C</option>
+    <option correct="false">B2C</option>
+  </question>
+
+  <question>
+    <text>What is the statement terminator in JavaScript? / જાવાસ્ક્રિપ્ટમાં સ્ટેટમેન્ટ ટર્મિનેટર કયું છે?</text>
+    <option correct="true">Semicolon (;)</option>
+    <option correct="false">Colon (:)</option>
+    <option correct="false">Comma (,)</option>
+    <option correct="false">Dot (.)</option>
+  </question>
+
+  <question>
+    <text>What is the full form of HTTP? / HTTP નું પૂરું નામ શું છે?</text>
+    <option correct="true">Hyper Text Transfer Protocol</option>
+    <option correct="false">High Transfer Text Protocol</option>
+    <option correct="false">Hyper Text Type Protocol</option>
+    <option correct="false">Hyper Terminal Transfer Protocol</option>
+  </question>
+
+  <question>
+    <text>Which specific variable can hold more than one value at a time? / કયો વિશિષ્ટ વેરીિએબલ એક સમયે એકથી વધુ મૂલ્ય ધરાવે છે?</text>
+    <option correct="false">Integer</option>
+    <option correct="false">String</option>
+    <option correct="true">Array</option>
+    <option correct="false">Boolean</option>
+  </question>
+
+  <question>
+    <text>How is a block of code defined in Python language? / પાયથોન ભાષામાં કોડના બ્લોકને કઈ રીતે વ્યાખ્યાયિત કરાય છે?</text>
+    <option correct="true">Indentation</option>
+    <option correct="false">Semicolon</option>
+    <option correct="false">Brackets</option>
+    <option correct="false">Quotes</option>
+  </question>
+
+  <question>
+    <text>Which DOS command deletes a directory? / કયો ડોસ (DOS) કમાન્ડ ડિરેક્ટરી કાઢી નાખે છે?</text>
+    <option correct="false">DEL</option>
+    <option correct="false">REMOVE</option>
+    <option correct="true">RD (Remove Directory)</option>
+    <option correct="false">CLS</option>
+  </question>
+
+  <question>
+    <text>What is the full form of COD in E-commerce? / ઈ-કોમર્સમાં COD નું પૂરું નામ શું છે?</text>
+    <option correct="true">Cash On Delivery</option>
+    <option correct="false">Call On Delivery</option>
+    <option correct="false">Code On Delivery</option>
+    <option correct="false">Cash On Data</option>
+  </question>
+
+  <question>
+    <text>JavaScript's behavior of moving declarations to the top of their scope is: / ઘોષણાઓને ટોચ પર ખસેડવાની જાવાસ્ક્રિપ્ટની વર્તણૂક કઈ છે?</text>
+    <option correct="false">Filtering</option>
+    <option correct="false">Sorting</option>
+    <option correct="true">Hoisting</option>
+    <option correct="false">Looping</option>
+  </question>
+
+  <question>
+    <text>What is the internal power supply unit of a CPU? / CPU નું આંતરિક પાવર સપ્લાય યુનિટ કયું છે?</text>
+    <option correct="false">UPS</option>
+    <option correct="true">SMPS</option>
+    <option correct="false">Battery</option>
+    <option correct="false">Transformer</option>
+  </question>
+
+  <question>
+    <text>Which query calculates sum/average and groups results by two sets of values? / કઈ ક્વેરી સરવાળો/સરેરાશ ગણીને બે સેટ દ્વારા જૂથબધ કરે છે?</text>
+    <option correct="false">Select Query</option>
+    <option correct="false">Action Query</option>
+    <option correct="true">Cross Tab Query</option>
+    <option correct="false">Simple Query</option>
+  </question>
+
+  <question>
+    <text>Gaining unauthorized control or access and destroying data is: / અનધિકૃત નિયંત્રણ મેળવવું અને ડેટાનો નાશ કરવો તે શું છે?</text>
+    <option correct="false">Phishing</option>
+    <option correct="false">Spamming</option>
+    <option correct="true">Hacking</option>
+    <option correct="false">Buffering</option>
+  </question>
+
+  <question>
+    <text>Which shortcut key is used for 'Paste'? / 'Paste' કરવા માટે કઈ શોર્ટકટ કી વપરાય છે?</text>
+    <option correct="false">Ctrl+C</option>
+    <option correct="true">Ctrl+V</option>
+    <option correct="false">Ctrl+P</option>
+    <option correct="false">Ctrl+X</option>
+  </question>
+
+  <question>
+    <text>What type of device is a Printer? / પ્રિન્ટર કયા પ્રકારનું ઉપકરણ છે?</text>
+    <option correct="false">Input</option>
+    <option correct="true">Output</option>
+    <option correct="false">Storage</option>
+    <option correct="false">Processing</option>
+  </question>
+
+  <question>
+    <text>Which software is an example of an Operating System? / નીચેનામાંથી કયું ઓપરેટિંગ સિસ્ટમનું ઉદાહરણ છે?</text>
+    <option correct="false">MS Word</option>
+    <option correct="false">Google Chrome</option>
+    <option correct="true">Windows 10</option>
+    <option correct="false">VLC Player</option>
+  </question>
+
+  <question>
+    <text>Which tag is used for the largest heading in HTML? / HTML માં સૌથી મોટી હેડિંગ માટે કયો ટેગ વપરાય છે?</text>
+    <option correct="false">h6</option>
+    <option correct="false">h3</option>
+    <option correct="true">h1</option>
+    <option correct="false">h4</option>
+  </question>
+
+  <question>
+    <text>What is the full form of URL? / URL નું પૂરું નામ શું છે?</text>
+    <option correct="true">Uniform Resource Locator</option>
+    <option correct="false">Unique Resource Link</option>
+    <option correct="false">Universal Resource Line</option>
+    <option correct="false">Unit Resource Locator</option>
+  </question>
+
+  <question>
+    <text>Which part of the computer performs arithmetic calculations? / કોમ્પ્યુટરનો કયો ભાગ ગાણિતિક ગણતરીઓ કરે છે?</text>
+    <option correct="false">Control Unit</option>
+    <option correct="true">ALU</option>
+    <option correct="false">Memory Unit</option>
     <option correct="false">Monitor</option>
   </question>
 
   <question>
-    <text>Which memory is volatile?</text>
-    <option correct="true">RAM</option>
-    <option correct="false">ROM</option>
-    <option correct="false">Hard Disk</option>
-    <option correct="false">DVD</option>
-  </question>
-
-  <question>
-    <text>Full form of URL?</text>
-    <option correct="true">Uniform Resource Locator</option>
-    <option correct="false">Universal Reference Link</option>
-    <option correct="false">Unified Resource Link</option>
-    <option correct="false">Uniform Read Locator</option>
-  </question>
-
-  <question>
-    <text>Which software is used for word processing?</text>
-    <option correct="true">MS Word</option>
-    <option correct="false">MS Excel</option>
-    <option correct="false">PowerPoint</option>
-    <option correct="false">Paint</option>
-  </question>
-
-  <question>
-    <text>Shortcut key for copy?</text>
-    <option correct="false">Ctrl + V</option>
-    <option correct="true">Ctrl + C</option>
+    <text>What is the shortcut key for 'Undo' in Windows? / વિન્ડોઝમાં 'Undo' માટેની શોર્ટકટ કી કઈ છે?</text>
+    <option correct="false">Ctrl + Y</option>
+    <option correct="true">Ctrl + Z</option>
+    <option correct="false">Ctrl + U</option>
     <option correct="false">Ctrl + X</option>
-    <option correct="false">Ctrl + Z</option>
   </question>
 
   <question>
-    <text>Which extension belongs to MS Word file?</text>
-    <option correct="false">.xls</option>
-    <option correct="true">.docx</option>
-    <option correct="false">.ppt</option>
-    <option correct="false">.html</option>
-  </question>
-
-  <question>
-    <text>Which feature corrects spelling automatically?</text>
-    <option correct="false">Mail Merge</option>
-    <option correct="true">AutoCorrect</option>
-    <option correct="false">Track Changes</option>
-    <option correct="false">Word Count</option>
-  </question>
-
-  <question>
-    <text>Which option aligns text equally on both sides?</text>
-    <option correct="false">Left Align</option>
-    <option correct="false">Right Align</option>
-    <option correct="true">Justify</option>
-    <option correct="false">Center</option>
-  </question>
-
-  <question>
-    <text>Which Excel symbol starts a formula?</text>
-    <option correct="false">@</option>
-    <option correct="false">#</option>
-    <option correct="true">=</option>
-    <option correct="false">&amp;</option>
-  </question>
-
-  <question>
-    <text>Which function calculates average in Excel?</text>
-    <option correct="false">SUM()</option>
-    <option correct="true">AVERAGE()</option>
-    <option correct="false">COUNT()</option>
-    <option correct="false">MAX()</option>
-  </question>
-
-  <question>
-    <text>Intersection of row and column is called?</text>
-    <option correct="true">Cell</option>
-    <option correct="false">Table</option>
-    <option correct="false">Box</option>
-    <option correct="false">Field</option>
-  </question>
-
-  <question>
-    <text>Which chart shows proportions?</text>
-    <option correct="false">Bar Chart</option>
-    <option correct="true">Pie Chart</option>
-    <option correct="false">Line Chart</option>
-    <option correct="false">Scatter Plot</option>
-  </question>
-
-  <question>
-    <text>Which key edits active cell in Excel?</text>
-    <option correct="true">F2</option>
-    <option correct="false">F5</option>
-    <option correct="false">F1</option>
-    <option correct="false">F12</option>
-  </question>
-
-  <question>
-    <text>Which PowerPoint view used for slide designing?</text>
-    <option correct="true">Normal View</option>
-    <option correct="false">Slide Sorter</option>
-    <option correct="false">Reading View</option>
-    <option correct="false">Notes View</option>
-  </question>
-
-  <question>
-    <text>Which feature adds animation to objects?</text>
-    <option correct="false">Transition</option>
-    <option correct="true">Custom Animation</option>
-    <option correct="false">Slide Show</option>
-    <option correct="false">Layout</option>
-  </question>
-
-  <question>
-    <text>Which option changes slide appearance?</text>
-    <option correct="true">Theme</option>
-    <option correct="false">Header</option>
-    <option correct="false">Footer</option>
-    <option correct="false">Notes</option>
-  </question>
-
-  <question>
-    <text>Which shortcut starts slideshow?</text>
-    <option correct="false">Ctrl + S</option>
-    <option correct="true">F5</option>
-    <option correct="false">F1</option>
-    <option correct="false">Esc</option>
-  </question>
-
-  <question>
-    <text>HTML stands for?</text>
-    <option correct="true">HyperText Markup Language</option>
-    <option correct="false">HighText Machine Language</option>
-    <option correct="false">Hyper Tool Multi Language</option>
-    <option correct="false">None</option>
-  </question>
-
-  <question>
-    <text>Which tag creates hyperlink?</text>
-    <option correct="true">a</option>
-    <option correct="false">h</option>
-    <option correct="false">link</option>
-    <option correct="false">hyper</option>
-  </question>
-
-  <question>
-    <text>Which tag inserts image?</text>
-    <option correct="true">img</option>
-    <option correct="false">image</option>
-    <option correct="false">photo</option>
-    <option correct="false">pic</option>
-  </question>
-
-  <question>
-    <text>Correct HTML structure starts with?</text>
-    <option correct="true">html</option>
-    <option correct="false">head</option>
-    <option correct="false">div</option>
-    <option correct="false">body</option>
-  </question>
-
-  <question>
-    <text>Which tag defines paragraph?</text>
-    <option correct="true">p</option>
-    <option correct="false">par</option>
-    <option correct="false">div</option>
-    <option correct="false">paragraph</option>
-  </question>
-
-  <question>
-    <text>Which attribute specifies link destination?</text>
-    <option correct="true">href</option>
-    <option correct="false">src</option>
-    <option correct="false">link</option>
-    <option correct="false">ref</option>
-  </question>
-
-  <question>
-    <text>Which tag creates line break?</text>
-    <option correct="true">br</option>
-    <option correct="false">break</option>
-    <option correct="false">line_break</option>
-    <option correct="false">brk</option>
-  </question>
-
-  <question>
-    <text>Which Excel function counts numeric cells?</text>
-    <option correct="true">COUNT()</option>
-    <option correct="false">COUNTA()</option>
-    <option correct="false">SUM()</option>
-    <option correct="false">TOTAL()</option>
-  </question>
-
-  <question>
-    <text>Which option freezes rows/columns?</text>
-    <option correct="true">Freeze Panes</option>
-    <option correct="false">Lock Cells</option>
-    <option correct="false">Split View</option>
-    <option correct="false">Hide</option>
-  </question>
-
-  <question>
-    <text>Which PowerPoint effect moves between slides?</text>
-    <option correct="true">Transition</option>
-    <option correct="false">Animation</option>
-    <option correct="false">Layout</option>
-    <option correct="false">Design</option>
-  </question>
-
-  <question>
-    <text>Which storage device is permanent?</text>
-    <option correct="false">RAM</option>
-    <option correct="true">Hard Disk</option>
-    <option correct="false">Cache</option>
-    <option correct="false">Register</option>
-  </question>
-
-  <question>
-    <text>Which shortcut saves file?</text>
-    <option correct="true">Ctrl + S</option>
-    <option correct="false">Ctrl + P</option>
-    <option correct="false">Ctrl + A</option>
-    <option correct="false">Ctrl + D</option>
-  </question>
-
-   <question>
-    <text>Which shortcut select all in document</text>
-    <option correct="true">Ctrl + A</option>
-    <option correct="false">Ctrl + P</option>
-    <option correct="false">Ctrl + A</option>
-    <option correct="false">Ctrl + D</option>
+    <text>What is the periodic assessment of security vulnerabilities in a computer system? / કોમ્પ્યુટર સિસ્ટમમાં સુરક્ષા નબળાઈનું સામયિક મૂલ્યાંકન શું છે?</text>
+    <option correct="false">Patching</option>
+    <option correct="true">Security Audit</option>
+    <option correct="false">Scanning</option>
+    <option correct="false">Backup</option>
   </question>
 </quiz>
 </script>
 
 <script>
-/* ================= CONFIG ================= */
-
-const QUIZ_TIME_SECONDS = 900; // ⏱ Change timer here
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdMp_3SIPVI5L5kIJAsbkp3T9LdG1JkzIdOKO6WET1RBX2EJI3L4or2VVkXWX0wLF/exec"; 
-// 🔗 Paste Apps Script Web App URL here
-
-/* ========================================== */
+const QUIZ_TIME_SECONDS = 900;
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdMp_3SIPVI5L5kIJAsbkp3T9LdG1JkzIdOKO6WET1RBX2EJI3L4or2VVkXWX0wLF/exec"; // Paste your Script URL
 
 let questions = [];
 let timeLeft = QUIZ_TIME_SECONDS;
 let timerInterval;
 
-function loadQuizFromXML() {
+function loadQuiz() {
   const xmlText = document.getElementById("quizData").textContent;
   const parser = new DOMParser();
   const xml = parser.parseFromString(xmlText, "text/xml");
-
   const qNodes = xml.querySelectorAll("question");
   const form = document.getElementById("quizForm");
 
   qNodes.forEach((qNode, index) => {
     const text = qNode.querySelector("text").textContent;
     const options = qNode.querySelectorAll("option");
+    
+    const qDiv = document.createElement("div");
+    qDiv.className = "question-card";
+    qDiv.innerHTML = `<div class="question-text">${index + 1}. ${text}</div>`;
 
-    const qObj = { text: text, options: [] };
+    const optContainer = document.createElement("div");
+    optContainer.className = "options-container";
 
-    const div = document.createElement("div");
-    div.className = "question";
-    div.innerHTML += `<p>${index + 1}. ${text}</p>`;
+    options.forEach((opt, i) => {
+      const isCorrect = opt.getAttribute("correct") === "true";
+      questions[index] = questions[index] || { options: [] };
+      questions[index].options.push({ correct: isCorrect });
 
-    options.forEach((optNode, i) => {
-      const optText = optNode.textContent;
-      const isCorrect = optNode.getAttribute("correct") === "true";
-
-      qObj.options.push({ text: optText, correct: isCorrect });
-
-      div.innerHTML += `
-        <label>
+      optContainer.innerHTML += `
+        <label class="option-label">
           <input type="radio" name="q${index}" value="${i}">
-          ${optText}
-        </label><br>
+          <div class="option-content">${opt.textContent}</div>
+        </label>
       `;
     });
 
-    questions.push(qObj);
-    form.appendChild(div);
+    qDiv.appendChild(optContainer);
+    form.appendChild(qDiv);
   });
 }
 
 function startTimer() {
   timerInterval = setInterval(() => {
     timeLeft--;
-
-    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-    const seconds = String(timeLeft % 60).padStart(2, '0');
-
-    document.getElementById("timer").textContent =
-      `Time: ${minutes}:${seconds}`;
-
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      submitQuiz(true);
-    }
+    let min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    let sec = String(timeLeft % 60).padStart(2, '0');
+    document.getElementById("timer").textContent = `Time Left: ${min}:${sec}`;
+    if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz(true); }
   }, 1000);
-}
-
-function calculateScore() {
-  let score = 0;
-
-  questions.forEach((q, index) => {
-    const selected = document.querySelector(`input[name="q${index}"]:checked`);
-    if (!selected) return;
-
-    if (q.options[selected.value].correct) score++;
-  });
-
-  return score;
-}
-
-async function sendToGoogleSheet(name, score) {
-  if (!GOOGLE_SCRIPT_URL.includes("http")) return;
-
-  const payload = { name: name, score: score };
-
-  try {
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.log("Sheet Error:", err);
-  }
 }
 
 async function submitQuiz(auto = false) {
   const name = document.getElementById("username").value.trim();
+  const btn = document.getElementById("submitBtn");
+  const loader = document.getElementById("loader");
+  const btnText = document.getElementById("btnText");
 
-  if (!name) {
-    alert("Please enter your name");
-    return;
+  if (!name) { alert("કૃપા કરીને નામ લખો!"); return; }
+
+  // Start Loading
+  btn.disabled = true;
+  loader.style.display = "block";
+  btnText.textContent = "Submitting...";
+
+  let score = 0;
+  questions.forEach((q, i) => {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if (sel && q.options[sel.value].correct) score++;
+  });
+
+  try {
+    // API Call to Google Sheets
+    if (GOOGLE_SCRIPT_URL.startsWith("http")) {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ name: name, score: score })
+      });
+    }
+
+    document.getElementById("result").innerHTML = `તમારો સ્કોર: ${score} / ${questions.length}`;
+    
+    // final success alert
+    alert(`અભિનંદન ${name}!\nતમારો ટેસ્ટ સફળતાપૂર્વક સબમિટ થઈ ગયો છે.\nસ્કોર: ${score}`);
+
+  } catch (e) {
+    alert("નેટવર્ક ભૂલ! પણ તમારો સ્કોર " + score + " છે.");
+  } finally {
+    loader.style.display = "none";
+    btnText.textContent = "Submitted Successfully";
   }
-
-  clearInterval(timerInterval);
-
-  const score = calculateScore();
-
-  await sendToGoogleSheet(name, score);
-
-  alert("Test submitted successfully");
-
-  // ✅ Redirect after submission
-  window.location.href = "https://google.com"; 
-
-  if (auto) alert("Time Up! Quiz Auto Submitted.");
 }
 
-document.getElementById("submitBtn")
-  .addEventListener("click", () => submitQuiz());
-
-loadQuizFromXML();
+document.getElementById("submitBtn").onclick = () => submitQuiz();
+loadQuiz();
 startTimer();
 </script>
 
 </body>
 </html>
-
-
-
-
-
 
